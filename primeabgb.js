@@ -33,34 +33,43 @@ async function searchAllPages(query, page) {
 
 async function searchSinglePage(searchQuery, page) {
     let formattedItems = [];
-    response = await axios.get(`https://mdcomputers.in/index.php?category_id=0&route=product%2Fsearch&search=${searchQuery}&page=${page}`);
+    response = await axios.get(`https://www.primeabgb.com/page/${page}/?post_type=product&s=${searchQuery}`);
     const $ = cheerio.load(response.data);
-    items = $('.product-item-container')
+    let items = $('li.product-item');
+    // console.log(items);
     items.each((index, val) => {
-        let img = 'http:' + $('.product-image-container', val).find('img').attr('data-src');
-        let imgHighRes = img.replace('180x180', '600x600');
+        // console.log($('span.price', val).find('ins').text().trim());
+        let price = Number($('span.price', val).find('ins').text().trim().split(',').join('').replace('₹',''));
+        let oldPrice = Number($('span.price', val).find('del').text().trim().split(',').join('').replace('₹',''));
+        let discountPercentage = ((oldPrice - price)/oldPrice) * 100;
+        // console.log({index, price});
         formattedItems.push({
-            name: $('h4', val).text().trim(),
-            price: $('.price-new', val).text().trim(),
-            discountPercentage: $('.label-sale', val).text().trim(),
-            url: $('.product-image-container', val).find('a').attr('href').split('?')[0],
-            img,
-            imgHighRes
+            name: $('h3.product-name', val).text().trim(),
+            price,
+            discountPercentage,
+            url: $('h3.product-name', val).find('a').attr('href').trim(),
+            img: $('img.attachment-post-thumbnail', val).attr('src')
         })
     });
 
 
     if (page == 1) {
+        let pagesUl = $('ul.page-numbers');
         let noOfPages;
+        
         try {
-            noOfPages = $('.product-filter-bottom .text-right').text().trim().split("(")[1].split(" ")[0];
-        } catch {
+            noOfPages = pagesUl.find('a.page-numbers').not('.next').last().text();
+        } catch (err) {
             noOfPages = 1;
         }
+
+        noOfPages = String(noOfPages).length==0?1:noOfPages;
         return { formattedItems, noOfPages };
     } else {
         return formattedItems;
     }
 }
+
+// search("3700x");
 
 module.exports = search;
