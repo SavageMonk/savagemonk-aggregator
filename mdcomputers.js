@@ -2,23 +2,59 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 async function search(query) {
-    searchQuery = query.split(" ").map(term=>encodeURIComponent(term)).join('+');
-    try {
-        let formattedItems = [];
-        response = await axios.get(`https://mdcomputers.in/index.php?category_id=0&route=product%2Fsearch&search=${searchQuery}`);
-        const $ = cheerio.load(response.data);
-        items = $('.product-item-container');
-        items.each((index, val)=> {
-            formattedItems.push({
-                name: $('h4', val).text().trim(),
-                price: $('.price-new', val).text().trim(),
-                discountPercentage: $('.label-sale', val).text().trim()
-            })
-        });
-        
+    searchQuery = query.split(" ").map(term => encodeURIComponent(term)).join('+');
+    return searchAllPages(searchQuery);
+}
+
+async function searchAllPages(query, page) {
+    let { formattedItems, noOfPages } = await searchSinglePage(query, 1);
+
+    if (noOfPages > 1) {
+        promisesList = [];
+
+        for (let i = 2; i <= noOfPages; i++) {
+            promisesList.push(searchSinglePage(query, i));
+        }
+
+        return Promise.all(promisesList)
+            .then(itemsArray => {
+                itemsArray.forEach(items => {
+                    formattedItems.push(...items);
+                });
+                return formattedItems;
+            });
+
+    } else {
         return formattedItems;
-    } catch (err) {
-        console.error(err);
+    }
+
+
+}
+
+async function searchSinglePage(searchQuery, page) {
+    let formattedItems = [];
+    response = await axios.get(`https://mdcomputers.in/index.php?category_id=0&route=product%2Fsearch&search=${searchQuery}&page=${page}`);
+    const $ = cheerio.load(response.data);
+    items = $('.product-item-container')
+    items.each((index, val) => {
+        let img = 'http:'+ $('.product-image-container', val).find('img').attr('data-src');
+        let imgHighRes = img.replace('180x180','600x600');
+        formattedItems.push({
+            name: $('h4', val).text().trim(),
+            price: $('.price-new', val).text().trim(),
+            discountPercentage: $('.label-sale', val).text().trim(),
+            url: $('.product-image-container', val).find('a').attr('href').split('?')[0],
+            img,
+            imgHighRes
+        })
+    });
+
+    let noOfPages = $('.product-filter-bottom .text-right').text().trim().split("(")[1].split(" ")[0];
+
+    if(page == 1) {
+        return { formattedItems, noOfPages };
+    } else {
+        return formattedItems;
     }
 }
 
