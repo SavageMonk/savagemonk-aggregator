@@ -39,10 +39,11 @@ async function searchSinglePage(searchQuery, page) {
     items.each((index, val) => {
         let img = 'http:' + $('.product-image-container', val).find('img').attr('data-src');
         let imgHighRes = img.replace('180x180', '600x600');
+        let discount = $('.label-sale', val).text().trim();
         formattedItems.push({
             name: $('h4', val).text().trim(),
-            price: $('.price-new', val).text().trim(),
-            discountPercentage: $('.label-sale', val).text().trim(),
+            price: $('.price-new', val).text().trim().replace('₹', '').replace(',', ''),
+            discountPercentage: discount.includes('%') ? discount : "No Discount",
             url: $('.product-image-container', val).find('a').attr('href').split('?')[0],
             img,
             imgHighRes
