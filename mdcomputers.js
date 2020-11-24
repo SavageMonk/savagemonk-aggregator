@@ -37,8 +37,8 @@ async function searchSinglePage(searchQuery, page) {
     const $ = cheerio.load(response.data);
     items = $('.product-item-container')
     items.each((index, val) => {
-        let img = 'http:'+ $('.product-image-container', val).find('img').attr('data-src');
-        let imgHighRes = img.replace('180x180','600x600');
+        let img = 'http:' + $('.product-image-container', val).find('img').attr('data-src');
+        let imgHighRes = img.replace('180x180', '600x600');
         formattedItems.push({
             name: $('h4', val).text().trim(),
             price: $('.price-new', val).text().trim(),
@@ -49,9 +49,14 @@ async function searchSinglePage(searchQuery, page) {
         })
     });
 
-    let noOfPages = $('.product-filter-bottom .text-right').text().trim().split("(")[1].split(" ")[0];
 
-    if(page == 1) {
+    if (page == 1) {
+        let noOfPages;
+        try {
+            noOfPages = $('.product-filter-bottom .text-right').text().trim().split("(")[1].split(" ")[0];
+        } catch {
+            noOfPages = 1;
+        }
         return { formattedItems, noOfPages };
     } else {
         return formattedItems;
