@@ -1,6 +1,3 @@
-//Since vedant computers didnt use page numbers in a typical sense and rather used no. of items displayed
-//I implemented only the search all pages shit
-
 const axios = require('axios');
 const cheerio = require('cheerio');
 
