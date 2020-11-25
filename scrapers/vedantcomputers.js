@@ -19,7 +19,7 @@ async function searchAllPages(searchQuery) {
         let imgHighRes = img.replace('250x250', '500x500');
         formattedItems.push({
             name: $('.name', val).text().trim(),
-            price: $('.price-normal', val).text().trim().replace('₹', '').replace(',', ''),
+            price: $('.price-normal', val).text().trim().replace('₹', '').split(',').join(''),
             url: $('.name', val).find('a').attr('href'),
             img,
             imgHighRes
