@@ -43,7 +43,7 @@ async function searchSinglePage(searchQuery, page) {
         formattedItems.push({
             name: $('h4', val).text().trim(),
             price: $('.price-new', val).text().trim().replace('₹', '').replace(',', ''),
-            discountPercentage: discount.includes('%') ? discount : "No Discount",
+            discountPercentage: discount.includes('%') ? discount : false,
             url: $('.product-image-container', val).find('a').attr('href').split('?')[0],
             img,
             imgHighRes

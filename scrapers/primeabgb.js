@@ -46,7 +46,7 @@ async function searchSinglePage(searchQuery, page) {
         formattedItems.push({
             name: $('h3.product-name', val).text().trim(),
             price,
-            discountPercentage,
+            discountPercentage: (discountPercentage==0?false:discountPercentage),
             url: $('h3.product-name', val).find('a').attr('href').trim(),
             img: $('img.attachment-post-thumbnail', val).attr('src')
         })
