@@ -13,7 +13,7 @@ async function searchAllPages(searchQuery) {
     let formattedItems = [];
     response = await axios.get(`https://www.vedantcomputers.com/index.php?route=product/search&search=${searchQuery}&limit=1000`);
     const $ = cheerio.load(response.data);
-    items = $('.product-thumb')
+    items = $('.product-thumb');
     items.each((index, val) => {
         let img = $('.image', val).find('img').attr('data-src');
         let imgHighRes = img.replace('250x250', '500x500');
@@ -26,7 +26,7 @@ async function searchAllPages(searchQuery) {
         })
     });
 
-    return formattedItems
+    return formattedItems;
 }
 
 module.exports = search;
