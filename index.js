@@ -6,7 +6,7 @@ const searchFunctions = [
     mdcomputers,
     vedantcomputers,
     primeabgb
-]
+];
 
 
 function search(term) {
@@ -14,7 +14,7 @@ function search(term) {
 
     searchFunctions.forEach(searcher => {
         promiseList.push(searcher(term));
-    })
+    });
 
     return Promise.all(promiseList)
         .then(lists => {

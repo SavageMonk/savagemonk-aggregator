@@ -2,15 +2,15 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 async function search(query) {
-    searchQuery = query.split(" ").map(term => encodeURIComponent(term)).join('+');
+    let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
     return searchAllPages(searchQuery);
 }
 
-async function searchAllPages(query, page) {
+async function searchAllPages(query) {
     let { formattedItems, noOfPages } = await searchSinglePage(query, 1);
 
     if (noOfPages > 1) {
-        promisesList = [];
+        let promisesList = [];
 
         for (let i = 2; i <= noOfPages; i++) {
             promisesList.push(searchSinglePage(query, i));
@@ -33,7 +33,7 @@ async function searchAllPages(query, page) {
 
 async function searchSinglePage(searchQuery, page) {
     let formattedItems = [];
-    response = await axios.get(`https://www.primeabgb.com/page/${page}/?post_type=product&s=${searchQuery}`);
+    let response = await axios.get(`https://www.primeabgb.com/page/${page}/?post_type=product&s=${searchQuery}`);
     const $ = cheerio.load(response.data);
     let items = $('li.product-item');
     // console.log(items);
@@ -49,7 +49,7 @@ async function searchSinglePage(searchQuery, page) {
             discountPercentage: (discountPercentage==0?false:discountPercentage),
             url: $('h3.product-name', val).find('a').attr('href').trim(),
             img: $('img.attachment-post-thumbnail', val).attr('src')
-        })
+        });
     });
 
 

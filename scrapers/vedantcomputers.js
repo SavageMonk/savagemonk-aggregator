@@ -5,15 +5,15 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 async function search(query) {
-    searchQuery = query.split(" ").map(term => encodeURIComponent(term)).join('+');
+    let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
     return searchAllPages(searchQuery);
 }
 
 async function searchAllPages(searchQuery) {
     let formattedItems = [];
-    response = await axios.get(`https://www.vedantcomputers.com/index.php?route=product/search&search=${searchQuery}&limit=1000`);
+    let response = await axios.get(`https://www.vedantcomputers.com/index.php?route=product/search&search=${searchQuery}&limit=1000`);
     const $ = cheerio.load(response.data);
-    items = $('.product-thumb');
+    let items = $('.product-thumb');
     items.each((index, val) => {
         let img = $('.image', val).find('img').attr('data-src');
         let imgHighRes = img.replace('250x250', '500x500');
@@ -23,7 +23,7 @@ async function searchAllPages(searchQuery) {
             url: $('.name', val).find('a').attr('href'),
             img,
             imgHighRes
-        })
+        });
     });
 
     return formattedItems;
