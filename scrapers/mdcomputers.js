@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { PROXY_URL } = require('../config');
 
 async function search(query) {
     let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
@@ -33,13 +34,18 @@ async function searchAllPages(query) {
 
 async function searchSinglePage(searchQuery, page) {
     let formattedItems = [];
-    let response = await axios.get(`https://mdcomputers.in/index.php?category_id=0&route=product%2Fsearch&search=${searchQuery}&page=${page}`);
+    let response;
+    try {
+        response = await axios.get(`${PROXY_URL}https://mdcomputers.in/index.php?category_id=0&route=product%2Fsearch&search=${searchQuery}&page=${page}`);
+    } catch (err) {
+        console.error(err);
+    }
     const $ = cheerio.load(response.data);
     let items = $('.product-item-container');
     items.each((index, val) => {
         let img = 'http:' + $('.product-image-container', val).find('img').attr('data-src');
         let imgHighRes = img.replace('180x180', '600x600');
-        let discount = $('.label-sale', val).text().trim();
+        let discount = $('.label-sale', val).text().trim().replace('-','').replace('%','');
         formattedItems.push({
             name: $('h4', val).text().trim(),
             price: $('.price-new', val).text().trim().replace('₹', '').replace(',', ''),

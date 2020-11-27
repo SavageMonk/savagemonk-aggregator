@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { PROXY_URL } = require('../config');
 
 async function search(query) {
     let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
@@ -8,7 +9,7 @@ async function search(query) {
 
 async function searchAllPages(searchQuery) {
     let formattedItems = [];
-    let response = await axios.get(`https://www.vedantcomputers.com/index.php?route=product/search&search=${searchQuery}&limit=1000`);
+    let response = await axios.get(`${PROXY_URL}https://www.vedantcomputers.com/index.php?route=product/search&search=${searchQuery}&limit=1000`);
     const $ = cheerio.load(response.data);
     let items = $('.product-thumb');
     items.each((index, val) => {

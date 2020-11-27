@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const {PROXY_URL} = require('../config/js');
 
 async function search(query) {
     let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
@@ -8,7 +9,7 @@ async function search(query) {
 
 async function searchAllPages(searchQuery) {
     let formattedItems = [];
-    let response = await axios.get(`https://ezpzsolutions.in/?count=1000&paged=&s=${searchQuery}&post_type=product&product_cat=0`);
+    let response = await axios.get(`${PROXY_URL}https://ezpzsolutions.in/?count=1000&paged=&s=${searchQuery}&post_type=product&product_cat=0`);
     const $ = cheerio.load(response.data);
     let items = $('.product-inner');
     items.each((index, val) => {

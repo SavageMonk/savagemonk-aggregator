@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { PROXY_URL } = require('../config');
 
 async function search(query) {
     let searchQuery = query.split(' ').map(term => encodeURIComponent(term)).join('+');
@@ -33,7 +34,7 @@ async function searchAllPages(query) {
 
 async function searchSinglePage(searchQuery, page) {
     let formattedItems = [];
-    let response = await axios.get(`https://www.primeabgb.com/page/${page}/?post_type=product&s=${searchQuery}`);
+    let response = await axios.get(`${PROXY_URL}https://www.primeabgb.com/page/${page}/?post_type=product&s=${searchQuery}`);
     const $ = cheerio.load(response.data);
     let items = $('li.product-item');
     // console.log(items);
